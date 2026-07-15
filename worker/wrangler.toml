@@ -1,0 +1,14 @@
+name = "ssc-result-checker-api"
+main = "src/index.js"
+compatibility_date = "2024-11-01"
+
+# Free KV namespace — used as the session/cookie store replacing PHP's
+# file-based cookie jar + $_SESSION.
+kv_namespaces = [
+  { binding = "SESSIONS", id = "REPLACE_WITH_YOUR_KV_ID" }
+]
+
+[vars]
+# Set this to your deployed Vercel URL (no trailing slash), e.g.
+# "https://ssc-checker.vercel.app". Required for CORS to work.
+ALLOWED_ORIGIN = "http://localhost:5173"
