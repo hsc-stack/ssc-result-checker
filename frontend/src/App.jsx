@@ -25,13 +25,27 @@ const GRADE_COLORS = {
 };
 
 function gradeBadgeClass(grade) {
-  return GRADE_COLORS[grade.trim().toUpperCase()] || "text-zinc-300 bg-zinc-800 border-zinc-750";
+  return (
+    GRADE_COLORS[grade.trim().toUpperCase()] ||
+    "text-zinc-300 bg-zinc-800 border-zinc-750"
+  );
 }
 
 function Spinner({ className = "h-5 w-5 text-emerald-400" }) {
   return (
-    <svg className={`animate-spin ${className}`} fill="none" viewBox="0 0 24 24">
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+    <svg
+      className={`animate-spin ${className}`}
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="4"
+      />
       <path
         className="opacity-75"
         fill="currentColor"
@@ -61,10 +75,14 @@ export default function App() {
     setCaptchaLoading(true);
     setCaptchaImg("");
     try {
-      const r = await fetch(`${API_URL}/api/captcha`, { credentials: "include" });
+      const r = await fetch(`${API_URL}/api/captcha`, {
+        credentials: "include",
+      });
       const d = await r.json();
       if (d.success === false) {
-        showError(d.data?.message || "Security validation failed to initialize.");
+        showError(
+          d.data?.message || "Security validation failed to initialize.",
+        );
         return;
       }
       setCaptchaImg(d.image);
@@ -107,19 +125,40 @@ export default function App() {
       const d = await r.json();
 
       if (d.success === false) {
-        showError(d.data?.message || d.error || "Server rejected the transaction parameters.");
+        showError(
+          d.data?.message ||
+            d.error ||
+            "Server rejected the transaction parameters.",
+        );
       } else {
         setError("");
         setResult(d.data.data);
         setShowResult(true);
       }
     } catch (err) {
-      showError("Critical Connection Error: Could not reach the dataset proxy gateways.");
+      showError(
+        "Critical Connection Error: Could not reach the dataset proxy gateways.",
+      );
     } finally {
       setSubmitting(false);
       setForm((f) => ({ ...f, captcha: "" }));
       loadCaptcha();
     }
+  }
+
+  function translateError(msg) {
+    const errors = {
+      "Result not found. Please check your details.":
+        "ফলাফল পাওয়া যায়নি। তথ্যগুলো সঠিক আছে কিনা যাচাই করুন।",
+
+      "Wrong captcha. Please refresh and try again.":
+        "ক্যাপচা কোড ভুল হয়েছে। ছবিতে দেখানো কোডটি নির্ভুলভাবে লিখুন।",
+
+      "Network timeout. Check your internet connection.":
+        "এই মুহূর্তে সার্ভার ডাউন রয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।",
+    };
+
+    return errors[msg] || msg;
   }
 
   return (
@@ -314,10 +353,10 @@ export default function App() {
                   </div>
                   <div>
                     <h4 className="text-rose-400 font-bold text-sm tracking-wide uppercase">
-                      Request Denied
+                      রিকোয়েস্ট সফল হয়নি
                     </h4>
                     <p className="text-xs sm:text-sm text-zinc-400 mt-1 leading-relaxed">
-                      {error}
+                      {translateError(error)}
                     </p>
                   </div>
                 </div>
@@ -404,10 +443,18 @@ function ResultCard({ data }) {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-zinc-800/80 pb-5">
         <div>
-          <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">{data.name}</h2>
+          <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">
+            {data.name}
+          </h2>
           <p className="text-xs text-zinc-400 mt-1">
-            Roll: <span className="text-zinc-200 font-mono font-medium">{data.roll}</span> &nbsp;&bull;&nbsp; Reg:{" "}
-            <span className="text-zinc-200 font-mono font-medium">{data.reg}</span>
+            Roll:{" "}
+            <span className="text-zinc-200 font-mono font-medium">
+              {data.roll}
+            </span>{" "}
+            &nbsp;&bull;&nbsp; Reg:{" "}
+            <span className="text-zinc-200 font-mono font-medium">
+              {data.reg}
+            </span>
           </p>
         </div>
         <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-2">
@@ -428,7 +475,10 @@ function ResultCard({ data }) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[13px] leading-relaxed">
         <InfoBox label="Institution Name" value={data.institute} />
-        <InfoBox label="Board & Curriculum" value={`${data.board} • ${data.group}`} />
+        <InfoBox
+          label="Board & Curriculum"
+          value={`${data.board} • ${data.group}`}
+        />
         <InfoBox label="Father's Name" value={data.father_name} />
         <InfoBox label="Mother's Name" value={data.mother_name} />
       </div>
@@ -446,10 +496,16 @@ function ResultCard({ data }) {
             <tbody className="divide-y divide-zinc-850/50 text-zinc-300 font-medium">
               {(data.grades || []).map((g, i) => (
                 <tr key={i} className="hover:bg-zinc-800/40 transition-colors">
-                  <td className="px-4 py-3 text-center text-zinc-500 font-mono text-[11px]">{g.code}</td>
-                  <td className="px-4 py-3 truncate max-w-[200px] sm:max-w-none">{g.subject}</td>
+                  <td className="px-4 py-3 text-center text-zinc-500 font-mono text-[11px]">
+                    {g.code}
+                  </td>
+                  <td className="px-4 py-3 truncate max-w-[200px] sm:max-w-none">
+                    {g.subject}
+                  </td>
                   <td className="px-4 py-3 text-center">
-                    <span className={`inline-flex px-2 py-0.5 rounded font-mono text-[11px] font-bold border ${gradeBadgeClass(g.grade)}`}>
+                    <span
+                      className={`inline-flex px-2 py-0.5 rounded font-mono text-[11px] font-bold border ${gradeBadgeClass(g.grade)}`}
+                    >
                       {g.grade}
                     </span>
                   </td>
@@ -466,7 +522,9 @@ function ResultCard({ data }) {
 function InfoBox({ label, value }) {
   return (
     <div className="space-y-1.5 p-3.5 bg-surfaceElevated border border-zinc-800/60 rounded-xl">
-      <span className="text-zinc-500 text-[9px] font-bold uppercase tracking-widest block">{label}</span>
+      <span className="text-zinc-500 text-[9px] font-bold uppercase tracking-widest block">
+        {label}
+      </span>
       <span className="text-zinc-200 font-medium leading-normal">{value}</span>
     </div>
   );
