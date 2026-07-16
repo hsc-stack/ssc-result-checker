@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8787";
 
 const BOARDS = [
@@ -176,16 +178,16 @@ export default function App() {
   function translateError(msg) {
     const errors = {
       "Result not found. Please check your details.":
-        "ফলাফল পাওয়া যায়নি। তথ্যগুলো সঠিক আছে কিনা যাচাই করুন।",
+        "ফলাফল পাওয়া যায়নি। তথ্যগুলো সঠিক আছে কিনা যাচাই করুন।",
 
       "Wrong captcha. Please refresh and try again.":
-        "ক্যাপচা কোড ভুল হয়েছে। ছবিতে দেখানো কোডটি নির্ভুলভাবে লিখুন।",
+        "ক্যাপচা কোড ভুল হয়েছে। ছবিতে দেখানো কোডটি নির্ভুলভাবে লিখুন।",
 
       "Network timeout. Check your internet connection.":
-        "এই মুহূর্তে সার্ভার ডাউন রয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন অথবা মেসেজের মাধ্যমে রেজাল্ট চেক করুন ",
+        "এই মুহূর্তে সার্ভার ডাউন রয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন অথবা মেসেজের মাধ্যমে রেজাল্ট চেক করুন ",
 
       "Security validation failed.":
-        "নিরাপত্তা যাচাই ব্যর্থ হয়েছে। পেজটি রিফ্রেশ করুন। ",
+        "নিরাপত্তা যাচাই ব্যর্থ হয়েছে। পেজটি রিফ্রেশ করুন। ",
     };
 
     return errors[msg] || msg;
@@ -221,8 +223,8 @@ export default function App() {
                   HSC Stack
                 </a>{" "}
                 — HSC শিক্ষার্থীদের জন্য বেস্ট ক্লাস, নোট, সাজেশন, প্রাকটিকাল ও
-                অন্যান্য শিক্ষাসামগ্রী সহজে খুঁজে পাওয়ার একটি কমিউনিটি-ভিত্তিক
-                <span className="font-semibold"> Open Source</span> ওয়েবসাইট
+                অন্যান্য শিক্ষাসামগ্রী সহজে খুঁজে পাওয়ার একটি কমিউনিটি-ভিত্তিক
+                <span className="font-semibold"> Open Source</span> ওয়েবসাইট
               </p>
             </div>
             <a
@@ -407,7 +409,7 @@ export default function App() {
               ) : null}
             </div>
           )}
-          
+
           {/* Live SMS Preview Section */}
           <div className="bg-surfaceElevated/40 border border-zinc-800 rounded-2xl p-5 sm:p-6 space-y-4">
             <div className="flex items-center gap-2">
@@ -417,7 +419,7 @@ export default function App() {
               </h3>
             </div>
             <p className="text-xs text-zinc-400 leading-relaxed">
-              সার্ভার ডাউন থাকলে সরাসরি আপনার সিম থেকে মেসেজ পাঠিয়ে রেজাল্ট
+              সার্ভার ডাউন থাকলে সরাসরি আপনার সিম থেকে মেসেজ পাঠিয়ে রেজাল্ট
               জানতে পারবেন (চার্জ প্রযোজ্য)। উপরে আপনার বোর্ড এবং রোল পূরণ করুন,
               তারপর নিচের সেন্ড মেসেজ বাটনে ক্লিক করুন এবং আপনার ফোন থেকে মেসেজ
               পাঠান
@@ -526,6 +528,164 @@ export default function App() {
 
 function ResultCard({ data }) {
   const isPassed = (data.result || "").toUpperCase() === "PASSED";
+
+  const exportPDF = () => {
+    try {
+      const doc = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
+
+      // Clean, elegant font setup (Helvetica standard)
+      doc.setFont("Helvetica", "normal");
+
+      // 1. Sleek Minimal Header Panel (Independent design, no official banners)
+      doc.setFillColor(15, 23, 42); // slate-900 matching minimalist dark themes
+      doc.rect(0, 0, 210, 38, "F");
+
+      doc.setTextColor(255, 255, 255);
+      doc.setFont("Helvetica", "bold");
+      doc.setFontSize(16);
+      doc.text("SSC RESULT REPORT", 15, 16);
+
+      doc.setFont("Helvetica", "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(156, 163, 175); // gray-400
+      
+      doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 15, 27);
+
+      // 2. Student Metadata Cards Structure
+      doc.setTextColor(31, 41, 55); // dark gray-800
+      doc.setFont("Helvetica", "bold");
+      doc.setFontSize(11);
+      doc.text("STUDENT PROFILE", 15, 52);
+
+      // Horizontal Divider rule
+      doc.setDrawColor(229, 231, 235); // gray-200
+      doc.setLineWidth(0.3);
+      doc.line(15, 55, 195, 55);
+
+      // Grid Info block fields
+      doc.setFontSize(9);
+      doc.setTextColor(107, 114, 128); // Label color (gray-500)
+      doc.text("Name of Student:", 15, 63);
+      doc.text("Father's Name:", 15, 70);
+      doc.text("Mother's Name:", 15, 77);
+      doc.text("Institution:", 15, 84);
+
+      doc.setTextColor(17, 24, 39); // Value color (gray-900)
+      doc.setFont("Helvetica", "bold");
+      doc.text(String(data.name || "N/A"), 48, 63);
+      doc.text(String(data.father_name || "N/A"), 48, 70);
+      doc.text(String(data.mother_name || "N/A"), 48, 77);
+      doc.text(String(data.institute || "N/A"), 48, 84);
+
+      // Right Column Metadata
+      doc.setFont("Helvetica", "normal");
+      doc.setTextColor(107, 114, 128);
+      doc.text("Roll Number:", 125, 63);
+      doc.text("Registration No:", 125, 70);
+      doc.text("Board & Group:", 125, 77);
+      doc.text("Result Status:", 125, 84);
+
+      doc.setTextColor(17, 24, 39);
+      doc.setFont("Helvetica", "bold");
+      doc.text(String(data.roll || "N/A"), 155, 63);
+      doc.text(String(data.reg || "N/A"), 155, 70);
+      doc.text(`${data.board} • ${data.group}`, 155, 77);
+
+      const statusText = isPassed ? "PASSED" : "FAILED";
+      if (isPassed) {
+        doc.setTextColor(5, 150, 105);
+      } else {
+        doc.setTextColor(220, 38, 38);
+      }
+      doc.text(statusText, 155, 84);
+
+      // GPA badge block
+      doc.setFillColor(243, 244, 246); // Light slate/gray
+      doc.roundedRect(15, 92, 180, 14, 2, 2, "F");
+      doc.setFontSize(11);
+      doc.setTextColor(31, 41, 55);
+      doc.setFont("Helvetica", "bold");
+      doc.text("OVERALL GRADE POINT AVERAGE (GPA):", 22, 101);
+      doc.setFontSize(14);
+      doc.setTextColor(16, 185, 129); // emerald-500
+      doc.text(String(data.gpa || "0.00"), 188, 101, { align: "right" });
+
+      // 3. Subject Grades Table (utilizing jspdf-autotable)
+      const tableHeaders = [["Code", "Subject Description", "Grade Obtained"]];
+      const tableRows = (data.grades || []).map((g) => [
+        g.code,
+        g.subject,
+        g.grade,
+      ]);
+
+      autoTable(doc, {
+        startY: 114,
+        head: tableHeaders,
+        body: tableRows,
+        theme: "striped",
+        headStyles: {
+          fillColor: [31, 41, 55], // dark zinc headers
+          textColor: [249, 250, 251],
+          fontStyle: "bold",
+          fontSize: 9,
+          halign: "left",
+        },
+        columnStyles: {
+          0: { cellWidth: 25, halign: "center" },
+          2: { cellWidth: 35, halign: "center", fontStyle: "bold" },
+        },
+        styles: {
+          font: "Helvetica",
+          fontSize: 9,
+          cellPadding: 3.5,
+        },
+        margin: { left: 15, right: 15 },
+      });
+
+      // 4. Clean Footer / Strict Unofficial Warning Section (Stretched dynamically below table)
+      const finalY = doc.lastAutoTable.finalY || 240;
+      doc.setFillColor(254, 243, 199); // soft amber warn bg
+      doc.setDrawColor(245, 158, 11); // amber stroke border
+      const disclaimer = doc.splitTextToSize(
+        "This PDF is generated from publicly available result data and is not an official document. It is not intended to replace the original result or serve as a legal document. This copy is provided for reference purposes only.",
+        170,
+      );
+      const boxHeight = 18 + disclaimer.length * 4;
+
+      doc.roundedRect(15, finalY + 12, 180, boxHeight, 1.5, 1.5, "FD");
+
+      doc.setFont("Helvetica", "bold");
+      doc.setFontSize(8);
+      doc.setTextColor(146, 64, 14); // Dark Amber Text
+      doc.text("REFERENCE COPY", 20, finalY + 18);
+
+      doc.setFont("Helvetica", "normal");
+      doc.setFontSize(7.5);
+      doc.setTextColor(180, 83, 9);
+
+      
+
+      doc.text(disclaimer, 20, finalY + 23);
+
+      doc.text(
+        "For the original official result, visit: https://www.educationboardresults.gov.bd",
+        20,
+        finalY + 23 + disclaimer.length * 4,
+      );
+
+      // Output Document Safely
+      doc.save(`SSC_Result_${data.roll || "Download"}.pdf`);
+      toast.success("PDF ডাউনলোড করা হয়েছে!");
+    } catch (err) {
+      toast.error("PDF তৈরি করা সম্ভব হয়নি।");
+      console.error(err);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-zinc-800/80 pb-5">
@@ -544,16 +704,25 @@ function ResultCard({ data }) {
             </span>
           </p>
         </div>
-        <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-2">
-          <span
-            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-widest uppercase border ${
-              isPassed
-                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                : "bg-red-500/10 text-red-400 border-red-500/20"
-            }`}
-          >
-            {data.result}
-          </span>
+        <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-3">
+          <div className="flex gap-2 items-center">
+            <span
+              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-widest uppercase border ${
+                isPassed
+                  ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                  : "bg-red-500/10 text-red-400 border-red-500/20"
+              }`}
+            >
+              {data.result}
+            </span>
+            <button
+              onClick={exportPDF}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-500/15 border border-emerald-500/30 text-[10px] font-bold text-emerald-400 uppercase tracking-wider rounded-lg hover:bg-emerald-500 hover:text-black transition-all duration-200 shrink-0"
+              title="Download PDF"
+            >
+              ⬇ PDF
+            </button>
+          </div>
           <div className="text-base sm:text-xl font-display font-bold text-white">
             GPA <span className="text-emerald-400">{data.gpa || "0.00"}</span>
           </div>
