@@ -8,7 +8,7 @@ export default function Hero() {
         <p className="text-xs sm:text-sm text-zinc-400 max-w-md mx-auto leading-relaxed px-4">
           Powered by{" "}
           <a
-            href="https://hscstack.tajimz.xyz"
+            href="https://hscstack.tajimz.xyz?utm_source=ssc-result.mvp.bd"
             target="_blank"
             rel="noreferrer"
             className="font-semibold text-emerald-400 hover:text-emerald-300 underline underline-offset-2 transition-colors"
@@ -21,7 +21,7 @@ export default function Hero() {
         </p>
       </div>
       <a
-        href="https://hscstack.tajimz.xyz"
+        href="https://hscstack.tajimz.xyz?utm_source=ssc-result.mvp.bd"
         target="_blank"
         rel="noreferrer"
         className="inline-flex items-center gap-2 px-4 py-1.5 bg-surface border border-zinc-800/80 rounded-full hover:bg-zinc-800/45 transition-all duration-300 group"

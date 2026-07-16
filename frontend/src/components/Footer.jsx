@@ -16,11 +16,10 @@ export default function Footer() {
           </a>
         </div>
         <p className="text-[11px] text-zinc-400 leading-relaxed">
-          This is <strong>NOT</strong> an official government website and is
-          not affiliated with the Ministry of Education or any Bangladesh
-          Education Board. We operate purely as an independent community
-          utility to fetch public academic data. For official services,
-          please visit the{" "}
+          This is <strong>NOT</strong> an official government website and is not
+          affiliated with the Ministry of Education or any Bangladesh Education
+          Board. We operate purely as an independent community utility to fetch
+          public academic data. For official services, please visit the{" "}
           <a
             href="https://www.educationboardresults.gov.bd/v2/home"
             target="_blank"
@@ -36,7 +35,7 @@ export default function Footer() {
         <span>
           Made with <span className="text-red-400">♥</span> by{" "}
           <a
-            href="https://hscstack.tajimz.xyz"
+            href="https://hscstack.tajimz.xyz?utm_source=ssc-result.mvp.bd"
             target="_blank"
             rel="noreferrer"
             className="font-bold text-emerald-400 underline decoration-2 underline-offset-4 hover:text-emerald-300 transition-colors"
@@ -47,7 +46,10 @@ export default function Footer() {
 
         <span className="text-zinc-700">•</span>
 
-        <a href="/privacy.html" className="hover:text-zinc-300 transition-colors">
+        <a
+          href="/privacy.html"
+          className="hover:text-zinc-300 transition-colors"
+        >
           Privacy Policy
         </a>
 
