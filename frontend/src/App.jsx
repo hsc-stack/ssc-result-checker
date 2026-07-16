@@ -70,24 +70,28 @@ export default function App() {
   const [result, setResult] = useState(null);
   const [showResult, setShowResult] = useState(false);
   const captchaInputRef = useRef(null);
+  const [captchaError, setCaptchaError] = useState("");
 
   async function loadCaptcha() {
     setCaptchaLoading(true);
     setCaptchaImg("");
+    setCaptchaError("");
+
     try {
       const r = await fetch(`${API_URL}/api/captcha`, {
         credentials: "include",
       });
+
       const d = await r.json();
+
       if (d.success === false) {
-        showError(
-          d.data?.message || "Security validation failed to initialize.",
-        );
+        setCaptchaError(d.data?.message || "Security validation failed.");
         return;
       }
+
       setCaptchaImg(d.image);
     } catch (e) {
-      showError("Network timeout. Check your internet connection.");
+      setCaptchaError("Network timeout. Check your internet connection.");
     } finally {
       setCaptchaLoading(false);
     }
@@ -136,9 +140,7 @@ export default function App() {
         setShowResult(true);
       }
     } catch (err) {
-      showError(
-        "Critical Connection Error: Could not reach the dataset proxy gateways.",
-      );
+      showError("Network timeout. Check your internet connection.");
     } finally {
       setSubmitting(false);
       setForm((f) => ({ ...f, captcha: "" }));
@@ -156,6 +158,9 @@ export default function App() {
 
       "Network timeout. Check your internet connection.":
         "এই মুহূর্তে সার্ভার ডাউন রয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।",
+
+      "Security validation failed.":
+        "নিরাপত্তা যাচাই ব্যর্থ হয়েছে। পেজটি রিফ্রেশ করুন। ",
     };
 
     return errors[msg] || msg;
@@ -295,7 +300,14 @@ export default function App() {
                       <Spinner />
                     </div>
                   )}
-                  {captchaImg && (
+
+                  {captchaError && !captchaLoading && (
+                    <p className="text-xs text-red-500 text-center px-3">
+                      {translateError(captchaError)}
+                    </p>
+                  )}
+
+                  {captchaImg && !captchaLoading && (
                     <img
                       src={captchaImg}
                       alt="Captcha"
