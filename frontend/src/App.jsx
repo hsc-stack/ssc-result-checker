@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-
+import toast from "react-hot-toast";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8787";
 
 const BOARDS = [
@@ -15,6 +15,21 @@ const BOARDS = [
   "madrasah",
   "technical",
 ];
+
+// Mapping for SMS Board Codes
+const SMS_BOARD_CODES = {
+  dhaka: "DHA",
+  rajshahi: "RAJ",
+  comilla: "COM",
+  chittagong: "CHI",
+  jessore: "JES",
+  sylhet: "SYL",
+  dinajpur: "DIN",
+  barisal: "BAR",
+  mymensingh: "MYM",
+  madrasah: "MAD",
+  technical: "TEC",
+};
 
 const GRADE_COLORS = {
   "A+": "text-emerald-400 bg-emerald-400/10 border-emerald-500/20",
@@ -73,6 +88,14 @@ export default function App() {
   const [showResult, setShowResult] = useState(false);
   const captchaInputRef = useRef(null);
   const [captchaError, setCaptchaError] = useState("");
+
+  // Build the SMS code structures dynamically
+  const activeBoardCode = SMS_BOARD_CODES[form.board] || "BOARD";
+  const smsMessage =
+    `SSC ${activeBoardCode} ${form.roll || "ROLL"} ${form.year}`.toUpperCase();
+
+  // Cross-browser compatible SMS URI parser helper
+  const smsHref = `sms:16222?body=${encodeURIComponent(smsMessage)}`;
 
   async function loadCaptcha() {
     setCaptchaLoading(true);
@@ -159,7 +182,7 @@ export default function App() {
         "ক্যাপচা কোড ভুল হয়েছে। ছবিতে দেখানো কোডটি নির্ভুলভাবে লিখুন।",
 
       "Network timeout. Check your internet connection.":
-        "এই মুহূর্তে সার্ভার ডাউন রয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।",
+        "এই মুহূর্তে সার্ভার ডাউন রয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন অথবা মেসেজের মাধ্যমে রেজাল্ট চেক করুন ",
 
       "Security validation failed.":
         "নিরাপত্তা যাচাই ব্যর্থ হয়েছে। পেজটি রিফ্রেশ করুন। ",
@@ -218,6 +241,12 @@ export default function App() {
           {/* Form */}
           <div className="bg-surfaceElevated/40 border border-zinc-800 rounded-2xl overflow-hidden">
             <form onSubmit={handleSubmit} className="p-5 sm:p-8 space-y-5">
+              <div className="border-b border-zinc-800/60 pb-3 flex items-center gap-2">
+                <span className="flex h-2 w-2 rounded-full bg-emerald-400" />
+                <h3 className="text-xs font-bold text-zinc-300 uppercase tracking-widest">
+                  অনলাইনে রেজাল্ট চেক করুন
+                </h3>
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="block text-[11px] font-semibold text-zinc-400 uppercase tracking-widest">
@@ -348,13 +377,58 @@ export default function App() {
                 {submitting ? (
                   <>
                     <Spinner className="h-4 w-4 text-black" />
-                    <span>Retrieving...</span>
+                    <span>অপেক্ষা করুন ...</span>
                   </>
                 ) : (
-                  <span>Check result</span>
+                  <span>রেজাল্ট চেক করুন</span>
                 )}
               </button>
             </form>
+          </div>
+
+          {/* Live SMS Preview Section */}
+          <div className="bg-surfaceElevated/40 border border-zinc-800 rounded-2xl p-5 sm:p-6 space-y-4">
+            <div className="flex items-center gap-2">
+              <span className="flex h-2 w-2 rounded-full bg-amber-400" />
+              <h3 className="text-xs font-bold text-zinc-300 uppercase tracking-widest">
+                মেসেজের মাধ্যমে রেজাল্ট চেক করুন (Alternative)
+              </h3>
+            </div>
+            <p className="text-xs text-zinc-400 leading-relaxed">
+              সার্ভার ডাউন থাকলে সরাসরি আপনার সিম থেকে মেসেজ পাঠিয়ে রেজাল্ট
+              জানতে পারবেন (চার্জ প্রযোজ্য)। উপরে আপনার বোর্ড এবং রোল পূরণ করুন,
+              তারপর নিচের সেন্ড মেসেজ বাটনে ক্লিক করুন এবং আপনার ফোন থেকে মেসেজ
+              পাঠান
+            </p>
+
+            {/* Chat bubble UI style configuration */}
+            <div className="bg-zinc-900/60 rounded-xl p-4 border border-zinc-800/80 space-y-3 font-mono text-xs">
+              <div className="flex justify-between text-zinc-500 text-[10px] uppercase tracking-wider pb-1.5 border-b border-zinc-800/40">
+                <span>
+                  To: <span className="text-emerald-400 font-bold">16222</span>
+                </span>
+                <span>Live Preview</span>
+              </div>
+              <div className="flex justify-end">
+                <div className="bg-emerald-500 text-black px-4 py-2.5 rounded-2xl rounded-tr-none max-w-[85%] font-bold text-sm tracking-wide shadow-md">
+                  {smsMessage}
+                </div>
+              </div>
+            </div>
+
+            <a
+              href={smsHref}
+              onClick={(e) => {
+                if (!form.roll.trim() || !form.board || !form.year) {
+                  e.preventDefault();
+                  toast.error("তথ্য পূরণ করুন");
+                }
+              }}
+              className="w-full text-center rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-200 font-semibold text-sm py-3 px-4 transition-all duration-300 active:scale-[0.98] flex items-center justify-center gap-2"
+            >
+              <span>✉</span>
+              <span>মেসেজ পাঠান</span>
+            </a>
           </div>
 
           {/* Result / error */}
