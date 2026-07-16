@@ -12,6 +12,8 @@ const BOARDS = [
   "dinajpur",
   "barisal",
   "mymensingh",
+  "madrasah",
+  "technical",
 ];
 
 const GRADE_COLORS = {
