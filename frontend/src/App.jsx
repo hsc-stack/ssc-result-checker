@@ -7,6 +7,7 @@ import ResultForm from "./components/ResultForm";
 import ResultPanel from "./components/ResultPanel";
 import SmsPreview from "./components/SmsPreview";
 import Footer from "./components/Footer";
+import Countdown from "./components/Countdown";
 
 export default function App() {
   const [form, setForm] = useState({
@@ -87,6 +88,7 @@ export default function App() {
       <div className="flex-1 flex flex-col justify-center items-center p-4 sm:p-6 z-10 w-full max-w-2xl mx-auto">
         <main className="w-full mt-6 sm:mt-10 mb-10 sm:mb-12 flex flex-col gap-6 sm:gap-8">
           <Hero />
+          <Countdown />
 
           <ResultForm
             form={form}
