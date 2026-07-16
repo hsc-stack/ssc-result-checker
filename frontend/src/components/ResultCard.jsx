@@ -8,6 +8,7 @@ export default function ResultCard({ data }) {
 
   return (
     <div className="space-y-6">
+      {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-zinc-800/80 pb-5">
         <div>
           <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">
@@ -35,13 +36,6 @@ export default function ResultCard({ data }) {
             >
               {data.result}
             </span>
-            <button
-              onClick={exportPDF}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-500/15 border border-emerald-500/30 text-[10px] font-bold text-emerald-400 uppercase tracking-wider rounded-lg hover:bg-emerald-500 hover:text-black transition-all duration-200 shrink-0"
-              title="Download PDF"
-            >
-              ⬇ PDF
-            </button>
           </div>
           <div className="text-base sm:text-xl font-display font-bold text-white">
             GPA <span className="text-emerald-400">{data.gpa || "0.00"}</span>
@@ -49,6 +43,7 @@ export default function ResultCard({ data }) {
         </div>
       </div>
 
+      {/* Info Boxes */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[13px] leading-relaxed">
         <InfoBox label="Institution Name" value={data.institute} />
         <InfoBox
@@ -59,6 +54,7 @@ export default function ResultCard({ data }) {
         <InfoBox label="Mother's Name" value={data.mother_name} />
       </div>
 
+      {/* Grades Table */}
       <div className="border border-zinc-800 rounded-xl overflow-hidden bg-surfaceElevated">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs sm:text-sm">
@@ -90,6 +86,17 @@ export default function ResultCard({ data }) {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Action Section Below the Results */}
+      <div className="w-full pt-2">
+        <button
+          onClick={exportPDF}
+          className="flex w-full items-center justify-center gap-2 px-4 py-3 bg-emerald-500/15 border border-emerald-500/30 text-xs font-bold text-emerald-400 uppercase tracking-wider rounded-xl hover:bg-emerald-500 hover:text-black transition-all duration-200 shadow-sm"
+          title="Download PDF"
+        >
+          ⬇ রেজাল্ট ডাউনলোড করুন
+        </button>
       </div>
     </div>
   );
