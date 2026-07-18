@@ -49,6 +49,16 @@ export default function Countdown() {
         </div>
       </div>
 
+      {/* Details Link */}
+      <a
+        href="https://hscstack.tajimz.xyz/blogs/esessi-oo-smmaner-fl-20-julai-prkas-hcche-na-julayer-mdhzei-prkaser-prstuti"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-block bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 px-6 rounded-full transition duration-300 shadow-lg shadow-emerald-900/20"
+      >
+        বিস্তারিত দেখুন
+      </a>
+
       {/* Footer Teaser */}
       <p className="text-[11px] font-bold text-zinc-500 tracking-wider uppercase">
         স্টে টিউনড • আসল কাউন্টডাউন খুব শীঘ্রই ফিরছে...
